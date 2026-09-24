@@ -1,50 +1,39 @@
-# Genai Code Assistant Backend
+# genai-code-assistant-backend
 
-GenAI-powered backend for intelligent code assistance and automation.
+Real GenAI code-assistant API: FastAPI backend with a **real
+OpenAI-compatible LLM client** (`llm.py`, httpx).
 
-![Language](https://img.shields.io/badge/Language-HTML-blue)
-![Status](https://img.shields.io/badge/Status-Active-success)
-![License](https://img.shields.io/badge/License-MIT-green)
+## What it does
 
-## 🚀 Overview
+- `POST /complete` — `{"prompt", "language"}` → code completion
+- `POST /explain` — `{"code", "language"}` → plain-English explanation
+- `POST /fix` — `{"code", "error", "language"}` → fixed code + what was wrong
+- `GET /health` — includes `key_configured`
 
-Welcome to the **Genai Code Assistant Backend** repository. This project is built to deliver a robust and scalable solution tailored to modern development standards.
+## API key
 
-## ✨ Features
+| Env var          | Purpose                      | Default                     |
+|------------------|------------------------------|-----------------------------|
+| `OPENAI_API_KEY` | **API key** for the LLM call | (unset)                     |
+| `OPENAI_BASE_URL`| Compatible endpoint          | `https://api.openai.com/v1` |
+| `OPENAI_MODEL`   | Model name                   | `gpt-4o-mini`               |
 
-- **High Performance:** Optimized for speed and efficiency.
-- **Scalable Architecture:** Designed to grow with your needs.
-- **Clean Codebase:** Follows best practices and industry standards.
-- **Secure by Default:** Engineered with security in mind.
+Without `OPENAI_API_KEY` every endpoint returns **HTTP 503** with a clear
+message — the service never fabricates code. With an invalid key, the
+provider's real 401 is surfaced.
 
-## 🛠️ Prerequisites
+## Run
 
-Ensure you have the following installed in your environment before proceeding:
-- Appropriate runtime/compiler for `HTML`
-- Standard development tools
+```bash
+pip install -r requirements.txt
+OPENAI_API_KEY=sk-... uvicorn main:app --port 8004
+```
 
-## 📦 Installation
+## Tests
 
-Follow standard installation steps for `HTML` to set up the project locally:
+```bash
+python -m pytest tests/ -q
+```
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Shivay00001/genai-code-assistant-backend.git
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd genai-code-assistant-backend
-   ```
-3. Install dependencies according to the standard `HTML` ecosystem.
-
-## 💻 Usage
-
-Run the project using standard execution commands for `HTML`. Ensure all environment variables and configurations are set prior to execution.
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
-
-## 📝 License
-
-This project is licensed under standard terms.
+Covers: honest 503 on all three endpoints without a key, real upstream 401
+with a dummy key (proves genuine HTTP plumbing), empty-input rejection.

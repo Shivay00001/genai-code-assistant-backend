@@ -1,5 +1,7 @@
 # genai-code-assistant-backend
 
+Built by [VisionQuantech](https://visionquantech.com) — AI agents, apps & tools for small businesses.
+
 Real GenAI code-assistant API: FastAPI backend with a **real
 OpenAI-compatible LLM client** (`llm.py`, httpx).
 
